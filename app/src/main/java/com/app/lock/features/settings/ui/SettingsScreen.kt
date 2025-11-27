@@ -121,7 +121,7 @@ fun SettingsScreen(
                         SettingItem(
                             icon = if (useBiometricAuth) Fingerprint else FingerprintOff,
                             title = "Biometric",
-                            description = null,
+                            description = "",
                             checked = useBiometricAuth && isBiometricAvailable,
                             enabled = isBiometricAvailable,
                             onCheckedChange = { isChecked ->
@@ -133,7 +133,7 @@ fun SettingsScreen(
                         SettingItem(
                             icon = Icons.Default.Person,
                             title = "Biometric",
-                            description = null,
+                            description = "",
                             checked = popBiometricAuth,
                             enabled = useBiometricAuth,
                             onCheckedChange = { isChecked ->
