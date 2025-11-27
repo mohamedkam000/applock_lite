@@ -186,7 +186,7 @@ fun SetPasswordScreen(
             }
             if (showLengthError) {
                 Text(
-                    text = "PIN must be 4 digits",
+                    text = "PIN must be 6 digits",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(8.dp)
@@ -362,6 +362,11 @@ fun SetPasswordScreen(
                                             navController.navigate(Screen.Main.route) {
                                                 popUpTo(Screen.SetPassword.route) {
                                                     inclusive = true
+                                                }
+                                                if (isFirstTimeSetup) {
+                                                    popUpTo(Screen.AppIntro.route) {
+                                                        inclusive = true
+                                                    }
                                                 }
                                             }
                                         } else {
