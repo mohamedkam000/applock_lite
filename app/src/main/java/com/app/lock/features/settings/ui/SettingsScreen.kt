@@ -1,6 +1,5 @@
 package com.app.lock.features.settings.ui
 
-//import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -28,8 +27,6 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-//import androidx.compose.material.icons.filled.QueryStats
-//import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CardDefaults
@@ -63,22 +60,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-//import com.app.lock.core.broadcast.DeviceAdmin
 import com.app.lock.core.navigation.Screen
-// import com.app.lock.core.utils.hasUsagePermission
-// import com.app.lock.core.utils.isAccessibilityServiceEnabled
-// import com.app.lock.core.utils.openAccessibilitySettings
 import com.app.lock.data.repository.AppLockRepository
-// import com.app.lock.data.repository.BackendImplementation
-//import com.app.lock.services.ExperimentalAppLockService
-//import com.app.lock.ui.icons.Accessibility
-//import com.app.lock.ui.icons.BrightnessHigh
 import com.app.lock.ui.icons.Fingerprint
 import com.app.lock.ui.icons.FingerprintOff
 import com.app.lock.ui.icons.Github
-//import com.app.lock.ui.icons.Timer
-//import kotlin.math.abs
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -87,9 +73,8 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val appLockRepository = remember { AppLockRepository(context) }
-    var useBiometricAuth by remember {
-        mutableStateOf(appLockRepository.isBiometricAuthEnabled())
-    }
+    var useBiometricAuth by remember { mutableStateOf(true) }
+
     var popBiometricAuth by remember {
         mutableStateOf(appLockRepository.shouldPromptForBiometricAuth())
     }
@@ -135,8 +120,8 @@ fun SettingsScreen(
                     Column {
                         SettingItem(
                             icon = if (useBiometricAuth) Fingerprint else FingerprintOff,
-                            title = "Biometric Unlock",
-                            description = if (isBiometricAvailable) "Use your fingerprint to unlock" else "Biometrics are not available on this device",
+                            title = "Biometric",
+                            description = null,
                             checked = useBiometricAuth && isBiometricAvailable,
                             enabled = isBiometricAvailable,
                             onCheckedChange = { isChecked ->
@@ -147,8 +132,8 @@ fun SettingsScreen(
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         SettingItem(
                             icon = Icons.Default.Person,
-                            title = "Prompt for Biometric",
-                            description = "Prompt for biometric authentication before entering PIN",
+                            title = "Biometric",
+                            description = null,
                             checked = popBiometricAuth,
                             enabled = useBiometricAuth,
                             onCheckedChange = { isChecked ->
@@ -156,43 +141,6 @@ fun SettingsScreen(
                                 appLockRepository.setPromptForBiometricAuth(isChecked)
                             }
                         )
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "About",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 0.dp, bottom = 12.dp)
-                )
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Column {
-                        ActionSettingItem(icon = Github, title = "View Source Code", onClick = {
-                            context.startActivity(
-                                Intent(
-                                    Intent.ACTION_VIEW,
-                                    "https://github.com/mohamedkam000/applock".toUri()
-                                )
-                            )
-                        })
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                        ActionSettingItem(
-                            icon = Icons.Filled.Person,
-                            title = "Developer Profile",
-                            onClick = {
-                                context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        "https://github.com/mohamedkam000".toUri()
-                                    )
-                                )
-                            })
                     }
                 }
             }
@@ -291,140 +239,3 @@ fun ActionSettingItem(
         }
     }
 }
-
-// @Composable
-// fun UnlockTimeDurationDialog(
-//     currentDuration: Int,
-//     onDismiss: () -> Unit,
-//     onConfirm: (Int) -> Unit
-// ) {
-//     val durations = listOf(0, 1, 5, 15, 30, 60)
-//     var selectedDuration by remember { mutableIntStateOf(currentDuration) }
-// 
-//     if (!durations.contains(selectedDuration)) {
-//         selectedDuration = durations.minByOrNull { abs(it - currentDuration) } ?: 0
-//     }
-// 
-//     AlertDialog(
-//         onDismissRequest = onDismiss,
-//         title = { Text("App Unlock Duration") },
-//         text = {
-//             Column {
-//                 Text("Pick how long apps should remain unlocked:")
-// 
-//                 durations.forEach { duration ->
-//                     Row(
-//                         modifier = Modifier
-//                             .fillMaxWidth()
-//                             .clickable { selectedDuration = duration }
-//                             .padding(vertical = 12.dp),
-//                         verticalAlignment = Alignment.CenterVertically
-//                     ) {
-//                         RadioButton(
-//                             selected = selectedDuration == duration,
-//                             onClick = { selectedDuration = duration }
-//                         )
-//                         Text(
-//                             text = when (duration) {
-//                                 0 -> "Lock immediately"
-//                                 1 -> "1 minute"
-//                                 60 -> "1 hour"
-//                                 else -> "$duration minutes"
-//                             },
-//                             modifier = Modifier.padding(start = 8.dp)
-//                         )
-//                     }
-//                 }
-//             }
-//         },
-//         confirmButton = {
-//             TextButton(onClick = { onConfirm(selectedDuration) }) {
-//                 Text("Confirm")
-//             }
-//         },
-//         dismissButton = {
-//             TextButton(onClick = onDismiss) {
-//                 Text("Cancel")
-//             }
-//         }
-//     )
-// }
-// 
-// @Composable
-// fun PermissionRequiredDialog(
-//     onDismiss: () -> Unit,
-//     onConfirm: () -> Unit
-// ) {
-//     AlertDialog(
-//         onDismissRequest = onDismiss,
-//         title = { Text("Permissions Required") },
-//         text = {
-//             Text(
-//                 "To enable Anti Uninstall, App Lock needs Device Admin permission"
-//             )
-//         },
-//         confirmButton = {
-//             TextButton(onClick = onConfirm) {
-//                 Text("Grant Permission")
-//             }
-//         },
-//         dismissButton = {
-//             TextButton(onClick = onDismiss) {
-//                 Text("Cancel")
-//             }
-//         }
-//     )
-// }
-// 
-// @Composable
-// fun DeviceAdminDialog(
-//     onDismiss: () -> Unit,
-//     onConfirm: () -> Unit
-// ) {
-//     AlertDialog(
-//         onDismissRequest = onDismiss,
-//         title = { Text("Device Admin") },
-//         text = {
-//             Text(
-//                 "App Lock needs Device Admin permission to prevent uninstallation."
-//             )
-//         },
-//         confirmButton = {
-//             TextButton(onClick = onConfirm) {
-//                 Text("Enable")
-//             }
-//         },
-//         dismissButton = {
-//             TextButton(onClick = onDismiss) {
-//                 Text("Cancel")
-//             }
-//         }
-//     )
-// }
-
-// @Composable
-// fun AccessibilityDialog(
-//     onDismiss: () -> Unit,
-//     onConfirm: () -> Unit
-// ) {
-//     AlertDialog(
-//         onDismissRequest = onDismiss,
-//         title = { Text("Accessibility Service") },
-//         text = {
-//             Text(
-//                 "App Lock needs Accessibility Service permission to monitor app usage."
-//             )
-//         },
-//         confirmButton = {
-//             TextButton(onClick = onConfirm) {
-//                 Text("Enable")
-//             }
-//         },
-//         dismissButton = {
-//             TextButton(onClick = onDismiss) {
-//                 Text("Cancel")
-//             }
-//         }
-//     )
-// }
-// 
